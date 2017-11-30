@@ -1,5 +1,5 @@
 # HaldCLUT
-C/C++ generator for Hald Color Lookup Tables
+C/C++ generator for Hald Color Lookup Tables. Derived from [C code by Quelsolaar](http://www.quelsolaar.com/technology/clut.html).
 
 ## Dependencies
 In order to output PNGs, libpng is required. To revert to TARGA files, undefine `HALDLUT_PNG_OUTPUT`.
