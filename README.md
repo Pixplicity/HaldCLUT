@@ -1,5 +1,5 @@
 # HaldCLUT
-C generator for Hald Color Lookup Tables
+C/C++ generator for Hald Color Lookup Tables
 
 ## Dependencies
 In order to output PNGs, libpng is required. To revert to TARGA files, undefine `HALDLUT_PNG_OUTPUT`.
@@ -9,6 +9,10 @@ In order to output PNGs, libpng is required. To revert to TARGA files, undefine 
     gcc src/create.c -o bin/create -lpng
 
 ## Usage
+
+    bin/create <OUTPUT_FILE> <LEVEL>
+
+For example:
 
     bin/create outputs/hald_clut.png 8
 
