@@ -2,13 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define HALDLUT_PNG_OUTPUT
-
-#ifdef HALDLUT_PNG_OUTPUT
 #include "png.c"
-#else
-#include "targa.c"
-#endif
 
 int main(int argc, char **argv) {
 	char *file_name = "hald_clut.tga";
@@ -52,26 +46,21 @@ int main(int argc, char **argv) {
 		}
 	}
 
-#ifdef HALDLUT_PNG_OUTPUT
-		printf("Writing PNG...\n");
-		png_bytep *row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
-		long i = 0;
-		for(int y = 0; y < height; y++) {
-			png_bytep row = (png_byte*) malloc(4 * width * sizeof(png_byte));
-			row_pointers[y] = row;
-			for (int x = 0; x < width; x++) {
-				png_bytep px = &(row[x * 4]);
-				px[0] = (int)(p[i++] * 255.0); // red
-				px[1] = (int)(p[i++] * 255.0); // green
-				px[2] = (int)(p[i++] * 255.0); // blue
-				px[3] = 255; // alpha
-			}
+	printf("Writing PNG...\n");
+	png_bytep *row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
+	long i = 0;
+	for(int y = 0; y < height; y++) {
+		png_bytep row = (png_byte*) malloc(4 * width * sizeof(png_byte));
+		row_pointers[y] = row;
+		for (int x = 0; x < width; x++) {
+			png_bytep px = &(row[x * 4]);
+			px[0] = (int)(p[i++] * 255.0); // red
+			px[1] = (int)(p[i++] * 255.0); // green
+			px[2] = (int)(p[i++] * 255.0); // blue
+			px[3] = 255; // alpha
 		}
-		write_png_file(file_name, width, height, row_pointers);
-#else
-		printf("Writing TARGA...\n");
-		save_targa(file_name, data, width, height);
-#endif
+	}
+	write_png_file(file_name, width, height, row_pointers);
 	
 	printf("Success!");
 	return 0;
