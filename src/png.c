@@ -2,7 +2,17 @@
 #include <stdio.h>
 #include <png.h>
 
-void read_png_file(char *filename) {
+struct Image {
+    int width;
+    int height;
+    png_byte color_type;
+    png_byte bit_depth;
+    png_bytep *row_pointers;
+};
+
+struct Image read_png_file(char *filename) {
+    struct Image image;
+
     FILE *fp = fopen(filename, "rb");
 
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -17,24 +27,24 @@ void read_png_file(char *filename) {
 
     png_read_info(png, info);
 
-    int width    = png_get_image_width(png, info);
-    int height = png_get_image_height(png, info);
-    png_byte color_type = png_get_color_type(png, info);
-    png_byte bit_depth    = png_get_bit_depth(png, info);
+    image.width  = png_get_image_width(png, info);
+    image.height = png_get_image_height(png, info);
+    image.color_type = png_get_color_type(png, info);
+    image.bit_depth  = png_get_bit_depth(png, info);
 
     // Read any color_type into 8bit depth, RGBA format.
     // See http://www.libpng.org/pub/png/libpng-manual.txt
 
-    if (bit_depth == 16) {
+    if (image.bit_depth == 16) {
         png_set_strip_16(png);
     }
 
-    if (color_type == PNG_COLOR_TYPE_PALETTE) {
+    if (image.color_type == PNG_COLOR_TYPE_PALETTE) {
         png_set_palette_to_rgb(png);
     }
 
     // PNG_COLOR_TYPE_GRAY_ALPHA is always 8 or 16bit depth.
-    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
+    if (image.color_type == PNG_COLOR_TYPE_GRAY && image.bit_depth < 8) {
         png_set_expand_gray_1_2_4_to_8(png);
     }
 
@@ -43,31 +53,33 @@ void read_png_file(char *filename) {
     }
 
     // These color_type don't have an alpha channel then fill it with 0xff.
-    if (color_type == PNG_COLOR_TYPE_RGB ||
-         color_type == PNG_COLOR_TYPE_GRAY ||
-         color_type == PNG_COLOR_TYPE_PALETTE) {
+    if (image.color_type == PNG_COLOR_TYPE_RGB ||
+         image.color_type == PNG_COLOR_TYPE_GRAY ||
+         image.color_type == PNG_COLOR_TYPE_PALETTE) {
         png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
     }
 
-    if (color_type == PNG_COLOR_TYPE_GRAY ||
-         color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
+    if (image.color_type == PNG_COLOR_TYPE_GRAY ||
+         image.color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
         png_set_gray_to_rgb(png);
 	}
 
     png_read_update_info(png, info);
 
-    png_bytep *row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
-    for (int y = 0; y < height; y++) {
-        row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
+    image.row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * image.height);
+    for (int y = 0; y < image.height; y++) {
+        image.row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
     }
 
-    png_read_image(png, row_pointers);
+    png_read_image(png, image.row_pointers);
 
     fclose(fp);
 
     png_destroy_read_struct(&png, &info, NULL);
     png=NULL;
     info=NULL;
+
+    return image;
 }
 
 void write_png_file(
