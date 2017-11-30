@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 
-// #define USEPNG
+#define HALDLUT_PNG_OUTPUT
 
-#ifdef USEPNG
+#ifdef HALDLUT_PNG_OUTPUT
 #include "png.c"
 #else
 #include "targa.c"
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-#ifdef USEPNG
+#ifdef HALDLUT_PNG_OUTPUT
 		printf("Writing PNG...\n");
 		png_bytep *row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
 		long i = 0;
