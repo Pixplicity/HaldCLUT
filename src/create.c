@@ -34,22 +34,23 @@ int main(int argc, char **argv) {
     printf("LEVEL:    %u\n", level);
     printf("MODE:     %u\n", mode);
 
-    int cube_size = level * level;
     int width, height;
     float *data;
 
     switch (mode) {
         default:
         case 0: {
+            int cube_size = level * level;
             width = level * level * level;
             height = width;
-            // Hald CLUT
+            // Conventional CLUT
             data = createHaldClut(cube_size);
         }
         break;
         case 1: {
-            width = level * level * level * level;
-            height = level * level;
+            int cube_size = level * level;
+            width = cube_size * cube_size;
+            height = cube_size;
             // Hald CLUT
             data = createClut(cube_size, width, height);
         }
