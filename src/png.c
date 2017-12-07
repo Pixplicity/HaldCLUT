@@ -62,7 +62,7 @@ struct Image read_png_file(char *filename) {
     if (image.color_type == PNG_COLOR_TYPE_GRAY ||
          image.color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
         png_set_gray_to_rgb(png);
-	}
+    }
 
     png_read_update_info(png, info);
 
